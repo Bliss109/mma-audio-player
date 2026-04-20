@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MMA Audio Player</title>
+    <link rel="stylesheet" href="style.css" />
+    
+</head>
+<body>
+    <!-- Page container -->
+    <div class="page-wrap">
+        <p class="page-title">Multimedia Applications &mdash; Strathmore University</p>
+
+        <!-- Main audio player card -->
+        <div class="player">
+            <!-- Top row: icon, track metadata, and status -->
+            <div class="player-header">
+                <div class="icon-circle">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6z" />
+                    </svg>
+                </div>
+                <div class="track-info">
+                    <div class="track-title" id="track-title">No file loaded</div>
+                    <div class="track-sub" id="track-sub">Load an audio file to begin</div>
+                </div>
+                <div class="status-pill">
+                    <div class="status-dot" id="status-dot"></div>
+                    <span class="status-text" id="status-text">Idle</span>
+                </div>
+            </div>
+
+            <!-- Interactive player area -->
+            <div class="player-body">
+                <!-- Inline alert messages for validation and playback state -->
+                <div class="alert-bar" id="alert-bar">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                    </svg>
+                    <span id="alert-msg"></span>
+                </div>
+
+                <!-- Local file picker -->
+                <div class="file-row">
+                    <label class="file-label" for="file-input">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z" />
+                        </svg>
+                        Load audio file
+                    </label>
+                    <input type="file" id="file-input" accept="audio/*" />
+                    <span class="file-name" id="file-name">No file selected</span>
+                </div>
+
+                <!-- Clickable waveform display -->
+                <div class="waveform-bar" id="waveform-bar" title="Click to seek">
+                    <canvas class="waveform-canvas" id="waveform-canvas"></canvas>
+                    <div class="waveform-overlay" id="waveform-overlay"></div>
+                </div>
+
+                <!-- Playback progress and current/total time -->
+                <div class="progress-wrap">
+                    <div class="progress-track" id="progress-track">
+                        <div class="progress-fill" id="progress-fill"></div>
+                        <div class="progress-thumb" id="progress-thumb"></div>
+                    </div>
+                    <div class="time-row">
+                        <span id="time-cur">0:00</span>
+                        <span id="time-dur">0:00</span>
+                    </div>
+                </div>
+
+                <!-- Primary transport controls -->
+                <div class="controls-row">
+                    <button class="ctrl-btn" id="btn-skip-back" title="Skip back 10 seconds">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M11 18V6l-8.5 6 8.5 6zm.5-6 8.5 6V6l-8.5 6z" />
+                        </svg>
+                    </button>
+                    <button class="ctrl-btn" id="btn-mute" title="Mute / Unmute (M)">
+                        <svg id="vol-icon" viewBox="0 0 24 24">
+                            <path
+                                d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
+                        </svg>
+                    </button>
+                    <button class="btn-play" id="btn-play" title="Play / Pause (Space)">
+                        <svg id="play-icon" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                    </button>
+                    <button class="ctrl-btn" id="btn-loop" title="Loop / Repeat (L)">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z" />
+                        </svg>
+                    </button>
+                    <button class="ctrl-btn" id="btn-skip-fwd" title="Skip forward 10 seconds">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M13 6v12l8.5-6L13 6zM4 18l8.5-6L4 6v12z" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Secondary controls: volume and playback speed -->
+                <div class="secondary-row">
+                    <div class="vol-group">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77z" />
+                        </svg>
+                        <input type="range" id="vol-slider" min="0" max="100" value="80" step="1" />
+                        <span class="vol-val" id="vol-val">80%</span>
+                    </div>
+                    <div class="speed-group">
+                        <label for="speed-select">Speed</label>
+                        <select class="speed-select" id="speed-select">
+                            <option value="0.25">0.25×</option>
+                            <option value="0.5">0.5×</option>
+                            <option value="0.75">0.75×</option>
+                            <option value="1" selected>1×</option>
+                            <option value="1.25">1.25×</option>
+                            <option value="1.5">1.5×</option>
+                            <option value="2">2×</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="divider"></div>
+
+                <!-- Keyboard guide for faster controls -->
+                <div class="kbd-heading">Keyboard shortcuts</div>
+                <div class="kbd-row">
+                    <div class="kbd"><span class="kbd-key">Space</span> play/pause</div>
+                    <div class="kbd"><span class="kbd-key">M</span> mute</div>
+                    <div class="kbd"><span class="kbd-key">L</span> loop</div>
+                    <div class="kbd"><span class="kbd-key">&#8592;</span> &minus;10s</div>
+                    <div class="kbd"><span class="kbd-key">&#8594;</span> +10s</div>
+                    <div class="kbd"><span class="kbd-key">&#8593;&#8595;</span> volume</div>
+                </div>
+            </div>
+
+            <!-- Footer note -->
+            <div class="player-footer">
+                Custom Audio Player &mdash; Web Audio API &mdash; Vanilla JS
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
